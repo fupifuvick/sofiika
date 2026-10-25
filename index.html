@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Причины, почему я тебя люблю, Софийка ❤️</title>
+    <style>
+        /* ================= СТИЛИ И ОФОРМЛЕНИЕ ================= */
+        :root {
+            --bg-gradient: linear-gradient(135deg, #ffeff4 0%, #ffd6e4 100%);
+            --card-bg: #ffffff;
+            --text-main: #4a2c38;
+            --text-muted: #8c6273;
+            --accent: #ff4d79;
+            --accent-hover: #e63963;
+            --shadow: 0 15px 35px rgba(255, 77, 121, 0.15);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            padding: 20px;
+        }
+
+        /* Падающие сердечки на фоне */
+        .floating-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            top: -50px;
+            font-size: 20px;
+            opacity: 0.5;
+            animation: fall linear infinite;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(110vh) rotate(360deg);
+            }
+        }
+
+        /* Основной контейнер */
+        .container {
+            position: relative;
+            z-index: 2;
+            max-width: 440px;
+            width: 100%;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+        }
+
+        h1 {
+            font-size: 26px;
+            font-weight: 800;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 15px;
+            color: var(--text-muted);
+            margin-top: -10px;
+        }
+
+        /* Таймер отношений */
+        .timer-box {
+            background: var(--card-bg);
+            padding: 10px 18px;
+            border-radius: 50px;
+            font-size: 13px;
+            color: var(--text-muted);
+            box-shadow: var(--shadow);
+            display: inline-block;
+        }
+
+        .timer-box span {
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        /* Карточка с причиной */
+        .card-wrapper {
+            width: 100%;
+            height: 290px;
+            perspective: 1000px;
+            position: relative;
+            margin: 10px 0;
+        }
+
+        .card {
+            width: 100%;
+            height: 100%;
+            background: var(--card-bg);
+            border-radius: 28px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            position: relative;
+            cursor: pointer;
+            touch-action: pan-y;
+            -webkit-touch-callout: none;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @media (hover: hover) {
+            .card:hover {
+                transform: translateY(-4px);
+            }
+        }
+
+        .card:active {
+            transform: scale(0.98);
+        }
+
+        .card.fly-out {
+            transform: translateX(120%) rotate(15deg);
+            opacity: 0;
+        }
+
+        .card-number {
+            position: absolute;
+            top: 20px;
+            left: 24px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--accent);
+            background: rgba(255, 77, 121, 0.1);
+            padding: 5px 12px;
+            border-radius: 20px;
+        }
+
+        .card-emoji {
+            font-size: 42px;
+            margin-bottom: 15px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.12); }
+        }
+
+        .card-text {
+            font-size: 19px;
+            font-weight: 600;
+            line-height: 1.45;
+            word-wrap: break-word;
+        }
+
+        .card-hint {
+            position: absolute;
+            bottom: 16px;
+            font-size: 12px;
+            color: var(--text-muted);
+            opacity: 0.7;
+        }
+
+        /* Модальное окно финального письма */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            -webkit-backdrop-filter: blur(5px);
+            backdrop-filter: blur(5px);
+            cursor: pointer;
+            touch-action: manipulation;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal {
+            background: var(--card-bg);
+            padding: 32px;
+            border-radius: 28px;
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal h2 {
+            color: var(--accent);
+            margin-bottom: 12px;
+            font-size: 24px;
+        }
+
+        .modal p {
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--text-main);
+            margin-bottom: 16px;
+            white-space: pre-line;
+        }
+
+        .modal-hint {
+            font-size: 12px;
+            color: var(--text-muted);
+            opacity: 0.7;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Падающие частицы на фоне -->
+    <div class="floating-bg" id="floatingBg"></div>
+
+    <div class="container">
+        <h1 id="mainTitle">Для моей любимой ❤️</h1>
+        <p class="subtitle" id="subTitle">Нажимай на карточку, чтобы узнать новую причину</p>
+
+        <!-- Таймер отношений -->
+        <div class="timer-box" id="timerBox" style="display: none;">
+            Мы вместе уже: <span id="timerText">...</span>
+        </div>
+
+        <!-- Карточка (переключается кликом или свайпом по самой карточке) -->
+        <div class="card-wrapper">
+            <div class="card" id="reasonCard">
+                <div class="card-number" id="cardCounter">Причина #1</div>
+                <div class="card-emoji" id="cardEmoji">👍🏻</div>
+                <div class="card-text" id="cardText">Нажми на карточку!</div>
+                <div class="card-hint" id="cardHint">Нажми на карточку ✨</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Финальное всплывающее окно (закрывается кликом по нему) -->
+    <div class="modal-overlay" id="finalModal">
+        <div class="modal">
+            <div style="font-size: 48px; margin-bottom: 10px;">🤷🏼‍♀️</div>
+            <h2 id="finalTitle">И самое главное...</h2>
+            <p id="finalText"></p>
+            <div class="modal-hint">Нажми в любое место, чтобы начать сначала 🔄</div>
+        </div>
+    </div>
+
+    <script>
+
+        const CONFIG = {
+            title: "Для моей самой любимой ❤️",
+            subtitle: "Нажимай на карточку, чтобы открыть следующую причину",
+
+            showTimer: true,
+            startDate: "2026-02-22",
+
+            reasons: [
+                "Твоя улыбка в кружочках способна поднять мне настроение даже в самый тяжелый и пасмурный день.",
+                "С тобой можно часами болтать обо всем на свете или просто уютно молчать вместе, очень грустно, что последнее время это не получается сделать.",
+                "То, как смешно и мило ты реагируешь на кринжовые ситуации.",
+                "Ты всегда веришь в меня и поддерживаешь даже в моих самых глупых начинаниях.",
+                "Наши игры в Deadlock - лучшее, что было)))).",
+                "Наши локальные шутки способны поднять настроение в любой момент.",
+                "В твоих глазах я всегда теряюсь и готов тонуть каждый раз, как в первый.",
+                "Твои сотни голосовых с самого утра заряжают энергией на весь день.",
+                "Ты умеешь слушать и слышать меня так, как никто другой, несмотря на то, что мне очень тяжело открываться для кого-то.",
+                "Я просто обожаю твой голос и твой заразительный смех.",
+                "Ты делаешь меня лучше каждый день просто тем, что ты рядом."
+            ],
+
+            finalTitle: "И самое главное...",
+            finalMessage: "На самом деле причин не десять и даже не сто — их бесконечно много.\n\nСпасибо тебе за каждый наш день, за твою нежность и тепло. Я тебя очень сильно люблю, моя любимая девочка и самое драгоценное сокровище! ❤️"
+        };
+
+
+        const emojis = ["👍🏻", "👎🏻", "😡", "🤷🏼‍♀️", "😝", "😇", "😭", "😴", "🤓", "🖕🏻", "👍🏻", "❤️", "🙏🏻", "💋"];
+        let currentIndex = -1;
+        let isAnimating = false;
+        let modalOpenedAt = 0;
+
+        function init() {
+            document.getElementById('mainTitle').textContent = CONFIG.title;
+            document.getElementById('subTitle').textContent = CONFIG.subtitle;
+            document.getElementById('finalTitle').textContent = CONFIG.finalTitle;
+            document.getElementById('finalText').textContent = CONFIG.finalMessage;
+
+            createFloatingParticles();
+            setupInput();
+
+            if (CONFIG.showTimer && CONFIG.startDate) {
+                document.getElementById('timerBox').style.display = 'inline-block';
+                updateTimer();
+                setInterval(updateTimer, 1000);
+            }
+
+            nextReason();
+        }
+
+        function nextReason() {
+            if (isAnimating) return;
+
+            const card = document.getElementById('reasonCard');
+
+            if (currentIndex >= CONFIG.reasons.length - 1) {
+                modalOpenedAt = Date.now();
+                document.getElementById('finalModal').classList.add('active');
+                return;
+            }
+
+            isAnimating = true;
+            card.classList.add('fly-out');
+
+            setTimeout(() => {
+                currentIndex++;
+                document.getElementById('cardCounter').textContent = `Причина #${currentIndex + 1} из ${CONFIG.reasons.length}`;
+                document.getElementById('cardText').textContent = CONFIG.reasons[currentIndex];
+                document.getElementById('cardEmoji').textContent = emojis[currentIndex % emojis.length];
+
+                if (currentIndex === CONFIG.reasons.length - 1) {
+                    document.getElementById('cardHint').textContent = "Нажми, чтобы открыть секретное послание 💌";
+                } else {
+                    document.getElementById('cardHint').textContent = "Нажми на карточку ✨";
+                }
+
+                card.classList.remove('fly-out');
+                isAnimating = false;
+            }, 300);
+        }
+
+        function setupInput() {
+            const card = document.getElementById('reasonCard');
+            const modal = document.getElementById('finalModal');
+
+            // Старые браузеры без Pointer Events — обычный click
+            if (!window.PointerEvent) {
+                card.addEventListener('click', nextReason);
+                modal.addEventListener('click', closeModal);
+                return;
+            }
+
+            // Тап и свайп по карточке через pointer events:
+            // на iPhone они срабатывают всегда, а click Safari иногда «съедает»
+            let startX = 0, startY = 0, tracking = false;
+
+            card.addEventListener('pointerdown', (e) => {
+                if (e.pointerType === 'mouse' && e.button !== 0) return;
+                startX = e.clientX;
+                startY = e.clientY;
+                tracking = true;
+            });
+
+            card.addEventListener('pointerup', (e) => {
+                if (!tracking) return;
+                tracking = false;
+                const dx = Math.abs(e.clientX - startX);
+                const dy = Math.abs(e.clientY - startY);
+                if (dx > 40 || (dx < 12 && dy < 12)) nextReason();
+            });
+
+            card.addEventListener('pointercancel', () => { tracking = false; });
+
+            modal.addEventListener('pointerup', closeModal);
+        }
+
+        function closeModal() {
+            // защита от «залипшего» тапа по последней карточке
+            if (Date.now() - modalOpenedAt < 600) return;
+            document.getElementById('finalModal').classList.remove('active');
+            currentIndex = -1;
+            nextReason();
+        }
+
+        function updateTimer() {
+            const start = new Date(CONFIG.startDate + "T00:00:00");
+            const now = new Date();
+            const diff = now - start;
+
+            if (isNaN(diff) || diff < 0) {
+                document.getElementById('timerText').textContent = "выбери дату в настройках";
+                return;
+            }
+
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            const mins = Math.floor((diff / 1000 / 60) % 60);
+            const secs = Math.floor((diff / 1000) % 60);
+
+            document.getElementById('timerText').textContent = 
+                `${days} дн. ${hours} ч. ${mins} мин. ${secs} сек.`;
+        }
+
+        function createFloatingParticles() {
+            const container = document.getElementById('floatingBg');
+            const symbols = ['❤️', '✨', '🌸', '💕'];
+            for (let i = 0; i < 18; i++) {
+                const el = document.createElement('div');
+                el.className = 'particle';
+                el.textContent = symbols[i % symbols.length];
+                el.style.left = Math.random() * 100 + 'vw';
+                el.style.animationDuration = (Math.random() * 6 + 6) + 's';
+                el.style.animationDelay = (Math.random() * 5) + 's';
+                el.style.fontSize = (Math.random() * 12 + 14) + 'px';
+                container.appendChild(el);
+            }
+        }
+
+        init();
+    </script>
+</body>
+</html>
